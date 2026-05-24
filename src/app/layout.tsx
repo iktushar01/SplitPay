@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google"
 import "./globals.css"
 
 import { ThemeProvider } from "../components/provider/theme-provider"
+import QueryProviders from "../components/provider/QueryProvider"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,18 +33,21 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
         
-        {/* 🔥 Theme system (required for dark mode) */}
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-    
-          
-            {children}
+        {/* 🔥 Query Client Provider (required for react-query) */}
+        <QueryProviders>
+          {/* 🔥 Theme system (required for dark mode) */}
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+      
+            
+              {children}
 
-        </ThemeProvider>
+          </ThemeProvider>
+        </QueryProviders>
 
       </body>
     </html>
