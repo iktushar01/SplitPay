@@ -1,5 +1,5 @@
 import Footer from "@/components/modules/HomePage/Footer";
-import Navbar from "@/components/modules/HomePage/Navbar";
+import { Navbar } from "@/components/modules/HomePage/Navbar";
 export default function CommonLayout({
   children,
 }: Readonly<{
