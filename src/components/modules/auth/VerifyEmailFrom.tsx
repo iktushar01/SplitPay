@@ -1,6 +1,5 @@
 "use client";
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import AppSubmitButton from "@/components/shared/form/AppSubmitButton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -67,7 +66,7 @@ const VerifyEmailForm = () => {
       } else {
         setServerError(result?.message || "Invalid or expired code");
       }
-    } catch (error: any) {
+    } catch {
       setServerError("A network error occurred.");
     }
   };
@@ -82,7 +81,7 @@ const VerifyEmailForm = () => {
       setTimeLeft(900); // Reset timer to 15 mins
       setOtp(""); // Clear input
       console.log("New OTP sent to:", email);
-    } catch (error: any) {
+    } catch {
       setServerError("Failed to resend. Please try again.");
     } finally {
       setIsResending(false);
@@ -175,7 +174,7 @@ const VerifyEmailForm = () => {
 
           <div className="mt-10 pt-6 border-t border-border/50">
             <p className="text-xs text-muted-foreground mb-4">
-              Didn't receive the code or is it expired?
+              Didn&apos;t receive the code or is it expired?
             </p>
             <Button
               type="button"

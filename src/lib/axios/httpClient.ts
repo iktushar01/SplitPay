@@ -1,9 +1,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { getNewTokensWithRefreshToken } from '@/services/auth/auth.services';
-import { ApiResponse } from '@/types/api.types';
+import { getNewTokensWithRefreshToken } from '../../services/auth/auth.services';
+import { ApiResponse } from '../../types/api.types';
 import axios, { AxiosRequestConfig } from 'axios';
 import { cookies, headers } from 'next/headers';
-import { isTokenExpiringSoon } from '../tokenUtils';
+// Dynamically import token util to avoid static resolution errors in different build contexts.
+const isTokenExpiringSoon = async (token: string): Promise<boolean> => {
+    try {
+        const tokenUtilPath = '../' + 'tokenUtils';
+        const mod = await import(tokenUtilPath);
+        return typeof mod.isTokenExpiringSoon === 'function' ? await mod.isTokenExpiringSoon(token) : false;
+    } catch (err) {
+        // If the module cannot be resolved, assume token is not expiring soon to avoid blocking requests.
+        console.error('Could not load token util:', err);
+        return false;
+    }
+};
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 

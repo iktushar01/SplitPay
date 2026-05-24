@@ -10,14 +10,19 @@ interface VerifyPayload {
 export const verifyEmailAction = async (payload: VerifyPayload) => {
   try {
     // result is already response.data because of your httpClient implementation
-    const result = await httpClient.post<any>("/auth/verify-email", payload);
+    const result = await httpClient.post<unknown>("/auth/verify-email", payload);
 
     // If your backend returns { success: true, ... }, this goes straight to the component
     return result; 
     
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const maybeError = error as {
+      response?: { data?: { message?: string } };
+    };
+
     // Extract the actual error message from the backend response
-    const errorMessage = error.response?.data?.message || "Invalid or expired code";
+    const errorMessage =
+      maybeError.response?.data?.message || "Invalid or expired code";
     
     console.error("VERIFICATION_API_ERROR:", errorMessage);
 

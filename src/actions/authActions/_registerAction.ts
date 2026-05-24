@@ -14,11 +14,21 @@ export const registerAction = async (formData: FormData) => {
     }
 
     return result;
-  } catch (error: any) {
-    if (error.digest?.startsWith("NEXT_REDIRECT")) throw error;
+  } catch (error: unknown) {
+    const maybeError = error as {
+      digest?: string;
+      response?: { data?: { message?: string } };
+      message?: string;
+    };
+
+    if (maybeError.digest?.startsWith("NEXT_REDIRECT")) throw error;
+
     return {
       success: false,
-      message: error.response?.data?.message || error.message || "Registration failed",
+      message:
+        maybeError.response?.data?.message ||
+        maybeError.message ||
+        "Registration failed",
     };
   }
 };
