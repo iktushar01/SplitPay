@@ -14,15 +14,11 @@ const mapUserToCookieShape = (user: {
   needPasswordChange?: boolean;
   createdAt?: string;
   image?: string | null;
-  student?: { profilePhoto?: string | null } | null;
 }): UserFromCookie => {
-  const avatar =
-    user.image ??
-    user.student?.profilePhoto ??
-    null;
+  const avatar = user.image ?? null;
 
   return {
-    id: user.id,
+    id: user.id ?? "",
     name: user.name,
     email: user.email,
     role: user.role,

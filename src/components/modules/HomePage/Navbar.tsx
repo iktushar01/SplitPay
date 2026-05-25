@@ -30,7 +30,12 @@ export function Navbar() {
 
         <div className="flex items-center gap-3">
           <ModeToggle />
-          <Button size="sm">Get Started</Button>
+          <Button size="sm" variant="ghost" asChild>
+            <Link href="/login">Log in</Link>
+          </Button>
+          <Button size="sm" asChild>
+            <Link href="/register">Get Started</Link>
+          </Button>
         </div>
       </div>
     </header>

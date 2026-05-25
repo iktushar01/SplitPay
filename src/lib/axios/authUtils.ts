@@ -1,65 +1,50 @@
-export type UserRole = "USER" | "COMMON";
+import { AUTH_ROUTES, PROTECTED_PREFIXES, ROUTES } from "@/config/routes";
 
-export const authRoutes = [ "/login", "/register", "/forgot-password", "/reset-password", "/verify-email" ];
+export type UserRole = "USER";
 
-export const isAuthRoute = (pathname : string) => {
-    return authRoutes.some((router : string) => router === pathname);
-}
+export const authRoutes = [...AUTH_ROUTES];
+
+export const isAuthRoute = (pathname: string) =>
+  authRoutes.some(
+    (route) => pathname === route || pathname.startsWith(`${route}/`),
+  );
 
 export type RouteConfig = {
-    exact : string[],
-    pattern : RegExp[]
-}
-
-export const commonProtectedRoutes : RouteConfig = {
-    exact : ["/my-profile", "/change-password"],
-    pattern : []
-}
-
-
-export const studentProtectedRoutes : RouteConfig = {
-    pattern: [/^\/dashboard/ ], // Matches any path that starts with /dashboard
-    exact : [ "/payment/success"]
+  exact: string[];
+  pattern: RegExp[];
 };
 
-export const isRouteMatches = (pathname : string, routes : RouteConfig) => {
-    if(routes.exact.includes(pathname)) {
-        return true;
-    }
-    return routes.pattern.some((pattern : RegExp) => pattern.test(pathname));
-}
+export const userProtectedRoutes: RouteConfig = {
+  pattern: [/^\/dashboard/],
+  exact: [],
+};
 
-export const getRouteOwner = (pathname : string) : UserRole | null => {
-    if(isRouteMatches(pathname, studentProtectedRoutes)) {
-        return "USER";
-    }
+export const isRouteMatches = (pathname: string, routes: RouteConfig) => {
+  if (routes.exact.includes(pathname)) {
+    return true;
+  }
+  return routes.pattern.some((pattern) => pattern.test(pathname));
+};
 
-    if(isRouteMatches(pathname, commonProtectedRoutes)) {
-        return "COMMON";
-    }
+export const getRouteOwner = (pathname: string): UserRole | null => {
+  if (isRouteMatches(pathname, userProtectedRoutes)) {
+    return "USER";
+  }
+  return null;
+};
 
-    return null; // public route
-}
+export const getDefaultDashboardRoute = (_role: UserRole) => ROUTES.dashboard;
 
-export const getDefaultDashboardRoute = (role : UserRole) => {
-    if(role === "USER") {
-        return "/dashboard";
-    }
+export const isValidRedirectForRole = (redirectPath: string, role: UserRole) => {
+  const sanitizedRedirectPath = redirectPath.split("?")[0] || redirectPath;
+  const routeOwner = getRouteOwner(sanitizedRedirectPath);
 
-    return "/";
-}
+  if (routeOwner === null) {
+    return true;
+  }
 
-export const isValidRedirectForRole = (redirectPath : string, role : UserRole) => {
-    const sanitizedRedirectPath = redirectPath.split("?")[0] || redirectPath;
-    const routeOwner = getRouteOwner(sanitizedRedirectPath);
+  return routeOwner === role;
+};
 
-    if(routeOwner === null || routeOwner === "COMMON"){
-        return true;
-    }
-
-    if(routeOwner === role){
-        return true;
-    }
-
-    return false;
-}
+export const isProtectedRoute = (pathname: string) =>
+  PROTECTED_PREFIXES.some((prefix) => pathname.startsWith(prefix));

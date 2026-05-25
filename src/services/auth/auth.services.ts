@@ -7,21 +7,16 @@ import { AuthUser } from "@/types/auth.types";
 interface TokenResponse {
   accessToken: string;
   refreshToken: string;
-  expiresIn?: number;
 }
-
-type BackendAuthUser = AuthUser & {
-  student?: { profilePhoto?: string | null } | null;
-};
 
 const getApiBaseUrl = () => {
   const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
   if (!apiBaseUrl) {
-    throw new Error("API_BASE_URL is not defined in environment variables");
+    throw new Error("NEXT_PUBLIC_API_BASE_URL is not defined");
   }
 
-  return apiBaseUrl;
+  return apiBaseUrl.replace(/\/$/, "");
 };
 
 const getAuthHeaders = async () => {
@@ -41,13 +36,13 @@ const getAuthHeaders = async () => {
 const getErrorMessage = (error: unknown, fallback: string) =>
   error instanceof Error ? error.message : fallback;
 
-export async function getUserInfo(): Promise<BackendAuthUser | null> {
+export async function getUserInfo(): Promise<AuthUser | null> {
   const cookieStore = await cookies();
   const userCookie = cookieStore.get("user")?.value;
 
   if (userCookie) {
     try {
-      return JSON.parse(userCookie) as BackendAuthUser;
+      return JSON.parse(userCookie) as AuthUser;
     } catch {
       cookieStore.delete("user");
     }
@@ -66,21 +61,21 @@ export async function getUserInfo(): Promise<BackendAuthUser | null> {
     throw new Error("Failed to load user info");
   }
 
-  const result = (await response.json()) as ApiResponse<BackendAuthUser>;
+  const result = (await response.json()) as ApiResponse<AuthUser>;
   return result.data ?? null;
 }
 
 export async function updateProfile(
-  payload: FormData
-): Promise<ApiResponse<BackendAuthUser>> {
-  const response = await fetch(`${getApiBaseUrl()}/auth/profile`, {
+  payload: FormData,
+): Promise<ApiResponse<AuthUser>> {
+  const response = await fetch(`${getApiBaseUrl()}/auth/me`, {
     method: "PATCH",
     headers: await getAuthHeaders(),
     body: payload,
     cache: "no-store",
   });
 
-  const result = (await response.json()) as ApiResponse<BackendAuthUser>;
+  const result = (await response.json()) as ApiResponse<AuthUser>;
 
   if (!response.ok || !result.success) {
     throw new Error(result.message || "Failed to update profile");
@@ -89,80 +84,81 @@ export async function updateProfile(
   return result;
 }
 
-/**
- * Refreshes the access token using the refresh token
- */
 export async function getNewTokensWithRefreshToken(
-  refreshToken: string
+  refreshToken: string,
 ): Promise<TokenResponse> {
-  try {
-    await cookies();
+  const cookieStore = await cookies();
+  const sessionToken = cookieStore.get("better-auth.session_token")?.value;
 
-    // TODO: Make actual API call to refresh endpoint
-    // Example implementation:
-    // const response = await fetch(`${API_BASE_URL}/auth/refresh`, {
-    //   method: 'POST',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //   },
-    //   body: JSON.stringify({ refreshToken }),
-    // });
-    //
-    // if (!response.ok) {
-    //   throw new Error('Failed to refresh token');
-    // }
-    //
-    // const data = await response.json() as ApiResponse<TokenResponse>;
-    // if (!data.success || !data.data) {
-    //   throw new Error(data.message || 'Failed to refresh token');
-    // }
-    //
-    // const { accessToken: newAccessToken, refreshToken: newRefreshToken } = data.data;
+  const response = await fetch(`${getApiBaseUrl()}/auth/refresh-token`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Cookie: [
+        `refreshToken=${refreshToken}`,
+        sessionToken ? `better-auth.session_token=${sessionToken}` : "",
+      ]
+        .filter(Boolean)
+        .join("; "),
+    },
+    cache: "no-store",
+  });
 
-    // For now, return the same token (placeholder)
-    // In a real implementation, this would fetch new tokens from the backend
-    const newTokens: TokenResponse = {
-      accessToken: refreshToken, // Placeholder
-      refreshToken: refreshToken, // Placeholder
-      expiresIn: 3600,
-    };
+  const result = (await response.json()) as ApiResponse<TokenResponse>;
 
-    // Update cookies with new tokens
-    // cookieStore.set('accessToken', newTokens.accessToken, {
-    //   httpOnly: true,
-    //   secure: process.env.NODE_ENV === 'production',
-    //   sameSite: 'lax',
-    //   maxAge: newTokens.expiresIn || 3600,
-    // });
-    //
-    // if (newTokens.refreshToken) {
-    //   cookieStore.set('refreshToken', newTokens.refreshToken, {
-    //     httpOnly: true,
-    //     secure: process.env.NODE_ENV === 'production',
-    //     sameSite: 'lax',
-    //     maxAge: 7 * 24 * 60 * 60, // 7 days
-    //   });
-    // }
-
-    return newTokens;
-  } catch (error: unknown) {
-    console.error("Error refreshing token:", error);
-    throw new Error(getErrorMessage(error, "Failed to refresh token"));
+  if (!response.ok || !result.success || !result.data) {
+    throw new Error(result.message || "Failed to refresh token");
   }
+
+  const { setTokenInCookies } = await import("@/lib/tokenUtils");
+  await setTokenInCookies("accessToken", result.data.accessToken);
+  await setTokenInCookies("refreshToken", result.data.refreshToken);
+
+  return result.data;
 }
 
-/**
- * Logs out the user by clearing auth cookies
- */
 export async function logout(): Promise<void> {
-  try {
-    const cookieStore = await cookies();
+  const headers = await getAuthHeaders();
 
-    // Clear auth cookies
-    cookieStore.delete("accessToken");
-    cookieStore.delete("refreshToken");
-  } catch (error: unknown) {
-    console.error("Error logging out:", error);
-    throw new Error(getErrorMessage(error, "Failed to logout"));
+  try {
+    await fetch(`${getApiBaseUrl()}/auth/logout`, {
+      method: "POST",
+      headers,
+      cache: "no-store",
+    });
+  } catch (error) {
+    console.error("Backend logout failed:", error);
   }
+
+  const cookieStore = await cookies();
+  [
+    "accessToken",
+    "refreshToken",
+    "better-auth.session_token",
+    "better-auth.session_data",
+    "user",
+  ].forEach((name) => cookieStore.delete(name));
+}
+
+export async function changePassword(payload: {
+  currentPassword: string;
+  newPassword: string;
+}): Promise<ApiResponse<null>> {
+  const response = await fetch(`${getApiBaseUrl()}/auth/change-password`, {
+    method: "POST",
+    headers: {
+      ...(await getAuthHeaders()),
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+    cache: "no-store",
+  });
+
+  const result = (await response.json()) as ApiResponse<null>;
+
+  if (!response.ok || !result.success) {
+    throw new Error(result.message || "Failed to change password");
+  }
+
+  return result;
 }

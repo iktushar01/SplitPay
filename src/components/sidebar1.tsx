@@ -42,12 +42,10 @@ const Sidebar1 = async ({ className, children }: Sidebar1Props) => {
     const backendUser = await getUserInfo();
 
     if (backendUser) {
-      const avatar =
-        backendUser.image ??
-        backendUser.student?.profilePhoto ??
-        null;
+      const avatar = backendUser.image ?? backendUser.avatar ?? null;
 
       user = {
+        id: backendUser.id,
         name: backendUser.name,
         email: backendUser.email,
         role: backendUser.role,
