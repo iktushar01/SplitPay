@@ -12,7 +12,6 @@ interface TokenResponse {
 
 type BackendAuthUser = AuthUser & {
   student?: { profilePhoto?: string | null } | null;
-  admin?: { profilePhoto?: string | null } | null;
 };
 
 const getApiBaseUrl = () => {

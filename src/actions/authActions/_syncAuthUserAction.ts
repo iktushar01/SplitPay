@@ -15,12 +15,10 @@ const mapUserToCookieShape = (user: {
   createdAt?: string;
   image?: string | null;
   student?: { profilePhoto?: string | null } | null;
-  admin?: { profilePhoto?: string | null } | null;
 }): UserFromCookie => {
   const avatar =
     user.image ??
     user.student?.profilePhoto ??
-    user.admin?.profilePhoto ??
     null;
 
   return {

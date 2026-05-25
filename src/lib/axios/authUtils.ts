@@ -1,4 +1,4 @@
-export type UserRole = "SUPER_ADMIN" | "ADMIN" | "USER" | "STUDENT" | "COMMON";
+export type UserRole = "USER" | "COMMON";
 
 export const authRoutes = [ "/login", "/register", "/forgot-password", "/reset-password", "/verify-email" ];
 
@@ -17,11 +17,6 @@ export const commonProtectedRoutes : RouteConfig = {
 }
 
 
-export const adminProtectedRoutes : RouteConfig = {
-    pattern: [/^\/admin(\/|$)/ ], // Matches admin area routes by default
-    exact : []
-}
-
 export const studentProtectedRoutes : RouteConfig = {
     pattern: [/^\/dashboard/ ], // Matches any path that starts with /dashboard
     exact : [ "/payment/success"]
@@ -34,15 +29,7 @@ export const isRouteMatches = (pathname : string, routes : RouteConfig) => {
     return routes.pattern.some((pattern : RegExp) => pattern.test(pathname));
 }
 
-export const getRouteOwner = (pathname : string) : "SUPER_ADMIN" | "ADMIN" | "USER" | "STUDENT" | "COMMON" | null => {
-    if(isRouteMatches(pathname, studentProtectedRoutes)) {
-        return "USER";
-    }
-
-    if(isRouteMatches(pathname, adminProtectedRoutes)) {
-        return "ADMIN";
-    }
-    
+export const getRouteOwner = (pathname : string) : UserRole | null => {
     if(isRouteMatches(pathname, studentProtectedRoutes)) {
         return "USER";
     }
@@ -55,11 +42,7 @@ export const getRouteOwner = (pathname : string) : "SUPER_ADMIN" | "ADMIN" | "US
 }
 
 export const getDefaultDashboardRoute = (role : UserRole) => {
-    if(role === "ADMIN" || role === "SUPER_ADMIN") {
-        return "/admin/dashboard";
-    }
-
-    if(role === "USER" || role === "STUDENT") {
+    if(role === "USER") {
         return "/dashboard";
     }
 
@@ -74,11 +57,7 @@ export const isValidRedirectForRole = (redirectPath : string, role : UserRole) =
         return true;
     }
 
-    if(routeOwner === role || (routeOwner === "USER" && role === "STUDENT")){
-        return true;
-    }
-
-    if(routeOwner === "ADMIN" && role === "SUPER_ADMIN") {
+    if(routeOwner === role){
         return true;
     }
 
