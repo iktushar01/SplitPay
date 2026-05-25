@@ -1,5 +1,9 @@
+"use client";
+
+import Link from "next/link";
 import { ArrowRight, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ROUTES } from "@/config/routes";
 
 const CTASection = () => {
   return (
@@ -18,13 +22,17 @@ const CTASection = () => {
         </div>
 
         <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
-          <Button className="h-11 bg-white px-5 text-cyan-700 hover:bg-cyan-50" size="lg">
-            <Plus className="size-4" />
-            Create your first group
+          <Button className="h-11 bg-white px-5 text-cyan-700 hover:bg-cyan-50" size="lg" asChild>
+            <Link href={ROUTES.groups}>
+              <Plus className="size-4" />
+              Create your first group
+            </Link>
           </Button>
-          <Button className="h-11 border-white/50 px-5 text-white hover:bg-white/10" size="lg" variant="outline">
-            Try SplitPay
-            <ArrowRight className="size-4" />
+          <Button className="h-11 border-white/50 px-5 text-white hover:bg-white/10" size="lg" variant="outline" asChild>
+            <Link href={ROUTES.dashboard}>
+              Try SplitPay
+              <ArrowRight className="size-4" />
+            </Link>
           </Button>
         </div>
       </div>

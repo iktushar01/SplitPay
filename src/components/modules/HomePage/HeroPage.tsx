@@ -1,5 +1,9 @@
+"use client";
+
+import Link from "next/link";
 import { ArrowRight, CheckCircle2, Plus, ReceiptText, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ROUTES } from "@/config/routes";
 
 const HeroPage = () => {
   return (
@@ -20,13 +24,17 @@ const HeroPage = () => {
           </p>
 
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <Button className="h-11 px-5" size="lg">
-              Get Started
-              <ArrowRight className="size-4" />
+            <Button className="h-11 px-5" size="lg" asChild>
+              <Link href={ROUTES.dashboard}>
+                Get Started
+                <ArrowRight className="size-4" />
+              </Link>
             </Button>
-            <Button className="h-11 px-5" size="lg" variant="outline">
-              <Plus className="size-4" />
-              Create Group
+            <Button className="h-11 px-5" size="lg" variant="outline" asChild>
+              <Link href={ROUTES.groups}>
+                <Plus className="size-4" />
+                Create Group
+              </Link>
             </Button>
           </div>
 

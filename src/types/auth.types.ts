@@ -1,5 +1,5 @@
 export interface AuthUser {
-  id?: string;
+  id: string;
   name: string;
   email: string;
   role: string;
@@ -11,7 +11,7 @@ export interface AuthUser {
   avatar?: string | null;
 }
 
-export type UserFromCookie = AuthUser;
+export type UserFromCookie = AuthUser & { avatar?: string | null };
 
 export interface ILoginResponse {
   accessToken: string;

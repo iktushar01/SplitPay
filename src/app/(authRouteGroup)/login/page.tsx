@@ -5,7 +5,7 @@ interface LoginParams {
 }
 
 /**
- * Acadex Auth Page
+ * SplitPay Auth Page
  * This server component unwraps searchParams and passes the 
  * redirect destination to the Client-side LoginForm.
  */

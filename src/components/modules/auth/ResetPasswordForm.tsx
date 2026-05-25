@@ -105,14 +105,10 @@ const ResetPasswordForm = () => {
 
   return (
     <main className="relative flex min-h-screen w-full items-center justify-center overflow-hidden bg-background px-6 py-10">
-      <div
-        className="absolute inset-0 z-0 opacity-30 pointer-events-none dark:opacity-10"
-        style={{
-          backgroundImage: "linear-gradient(var(--muted) 1px, transparent 1px)",
-          backgroundSize: "100% 2.5rem",
-        }}
-      />
-      <div className="absolute top-0 left-[10%] h-full w-[2px] bg-destructive/10 z-0 md:left-[15%] lg:left-[20%]" />
+      {/* 1. PREMIUM NEON MESH BACKGROUND */}
+      <div className="absolute inset-0 z-0 bg-linear-to-b from-transparent to-muted/20 pointer-events-none" />
+      <div className="absolute top-[-10%] left-[-10%] h-[50%] w-[50%] rounded-full bg-cyan-500/10 blur-[120px] dark:bg-cyan-500/5 pointer-events-none" />
+      <div className="absolute bottom-[-10%] right-[-10%] h-[50%] w-[50%] rounded-full bg-emerald-500/10 blur-[120px] dark:bg-emerald-500/5 pointer-events-none" />
 
       <nav className="absolute top-6 left-6 z-20">
         <Link href={emailFromQuery ? `/forgot-password` : "/login"}>
@@ -149,16 +145,16 @@ const ResetPasswordForm = () => {
             }}
             className="space-y-6"
           >
-            <form.Field
+             <form.Field
               name="email"
               validators={{ onChange: resetPasswordZodSchema.shape.email }}
             >
               {(field) => (
                 <AppField
                   field={field}
-                  label="University Email"
+                  label="Email Address"
                   type="email"
-                  placeholder="you@college.edu"
+                  placeholder="you@example.com"
                   prepend={<Mail className="h-4 w-4" />}
                 />
               )}
