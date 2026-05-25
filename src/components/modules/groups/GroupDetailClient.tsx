@@ -24,7 +24,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { formatDate, formatMoney } from "@/lib/format";
+import { formatDate, formatMoney, getNetBalance } from "@/lib/format";
 import { GroupDashboard, Settlement } from "@/types/splitpay.types";
 import { ArrowRight, Plus, UserPlus } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -258,7 +258,9 @@ export function GroupDetailClient({
             <div className="rounded-xl border bg-card p-5">
               <h3 className="font-semibold">Balances</h3>
               <ul className="mt-3 space-y-2">
-                {balances.map((b) => (
+                {balances.map((b) => {
+                  const net = getNetBalance(b);
+                  return (
                   <li
                     key={b.userId}
                     className="flex items-center justify-between text-sm"
@@ -266,16 +268,17 @@ export function GroupDetailClient({
                     <span>{b.user?.name ?? "Unknown"}</span>
                     <span
                       className={
-                        b.netBalance >= 0
+                        net >= 0
                           ? "font-medium text-emerald-600"
                           : "font-medium text-rose-600"
                       }
                     >
-                      {b.netBalance >= 0 ? "+" : ""}
-                      {formatMoney(b.netBalance)}
+                      {net >= 0 ? "+" : ""}
+                      {formatMoney(net)}
                     </span>
                   </li>
-                ))}
+                  );
+                })}
               </ul>
             </div>
             <div className="rounded-xl border bg-card p-5">

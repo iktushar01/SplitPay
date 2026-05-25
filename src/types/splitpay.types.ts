@@ -43,7 +43,12 @@ export type Expense = {
 
 export type BalanceEntry = {
   userId: string;
-  netBalance: number;
+  netBalance?: number;
+  effectiveNet?: number;
+  paidTotal?: number;
+  shareTotal?: number;
+  expenseNet?: number;
+  settlementAdjustment?: number;
   user: SplitPayUser | null;
 };
 

@@ -1,7 +1,7 @@
 import { fetchMyGroupsAction } from "@/actions/groupActions";
 import { getGroupDashboard } from "@/services/groups/groups.service";
 import { ROUTES } from "@/config/routes";
-import { formatMoney } from "@/lib/format";
+import { formatMoney, getNetBalance } from "@/lib/format";
 import Link from "next/link";
 
 export default async function BalancesPage() {
@@ -49,7 +49,9 @@ export default async function BalancesPage() {
                 </Link>
               </div>
               <ul className="space-y-2">
-                {dashboard.balances.map((b) => (
+                {dashboard.balances.map((b) => {
+                  const net = getNetBalance(b);
+                  return (
                   <li
                     key={b.userId}
                     className="flex justify-between text-sm"
@@ -57,16 +59,17 @@ export default async function BalancesPage() {
                     <span>{b.user?.name ?? "Member"}</span>
                     <span
                       className={
-                        b.netBalance >= 0
+                        net >= 0
                           ? "font-medium text-emerald-600"
                           : "font-medium text-rose-600"
                       }
                     >
-                      {b.netBalance >= 0 ? "+" : ""}
-                      {formatMoney(b.netBalance)}
+                      {net >= 0 ? "+" : ""}
+                      {formatMoney(net)}
                     </span>
                   </li>
-                ))}
+                  );
+                })}
               </ul>
               {dashboard.suggestedTransfers.length > 0 ? (
                 <div className="mt-4 border-t pt-4">
