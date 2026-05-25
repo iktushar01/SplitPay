@@ -1,13 +1,13 @@
 "use server";
 
 import {
-  addGroupMember,
   createGroup,
   getGroupById,
   getGroupDashboard,
   getMyGroups,
-  lookupUserByEmail,
 } from "@/services/groups/groups.service";
+import { inviteToGroup } from "@/services/invites/invites.service";
+import { getApiErrorMessage } from "@/lib/apiError";
 import { revalidatePath } from "next/cache";
 import { ROUTES } from "@/config/routes";
 
@@ -68,26 +68,34 @@ export const createGroupAction = async (payload: {
   }
 };
 
-export const addMemberByEmailAction = async (
+export const inviteMemberByEmailAction = async (
   groupId: string,
   email: string,
 ) => {
   try {
-    const user = await lookupUserByEmail(email);
-    if (!user?.id) {
-      return { success: false as const, message: "User not found" };
+    const trimmed = email.trim().toLowerCase();
+    if (!trimmed || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
+      return { success: false as const, message: "Please enter a valid email" };
     }
-    await addGroupMember(groupId, user.id);
+
+    const result = await inviteToGroup(groupId, trimmed);
     revalidatePath(ROUTES.groupDetail(groupId));
     revalidatePath(ROUTES.groups);
-    return { success: true as const, data: user };
+    revalidatePath(ROUTES.dashboard);
+
+    return {
+      success: true as const,
+      data: result.data,
+      message:
+        result.message ||
+        (result.data?.isNewUser
+          ? "Invitation email sent. They can sign up on SplitPay to join this group."
+          : "Invitation sent. They can accept it from their dashboard."),
+    };
   } catch (error: unknown) {
-    const axiosError = error as { response?: { data?: { message?: string } } };
     return {
       success: false as const,
-      message:
-        axiosError.response?.data?.message ||
-        (error instanceof Error ? error.message : "Failed to add member"),
+      message: getApiErrorMessage(error, "Failed to send invitation"),
     };
   }
 };

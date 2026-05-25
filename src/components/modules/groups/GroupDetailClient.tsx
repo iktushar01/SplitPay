@@ -1,6 +1,6 @@
 "use client";
 
-import { addMemberByEmailAction } from "@/actions/groupActions";
+import { inviteMemberByEmailAction } from "@/actions/groupActions";
 import { createExpenseAction } from "@/actions/expenseActions";
 import {
   completeSettlementAction,
@@ -65,10 +65,25 @@ export function GroupDetailClient({
 
   const handleAddExpense = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const amount = Number(expenseForm.amount);
+    if (!expenseForm.title.trim()) {
+      toast.error("Please enter an expense title");
+      return;
+    }
+    if (!amount || amount <= 0) {
+      toast.error("Please enter a valid amount");
+      return;
+    }
+    if (!expenseForm.paidById) {
+      toast.error("Please select who paid");
+      return;
+    }
+
     setLoading(true);
     const result = await createExpenseAction(group.id, {
       title: expenseForm.title.trim(),
-      amount: Number(expenseForm.amount),
+      amount,
       paidById: expenseForm.paidById,
     });
     setLoading(false);
@@ -87,7 +102,7 @@ export function GroupDetailClient({
   const handleAddMember = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    const result = await addMemberByEmailAction(group.id, memberEmail.trim());
+    const result = await inviteMemberByEmailAction(group.id, memberEmail.trim());
     setLoading(false);
 
     if (!result.success) {
@@ -95,7 +110,7 @@ export function GroupDetailClient({
       return;
     }
 
-    toast.success(`${result.data?.name} added to the group`);
+    toast.success(result.message);
     setMemberOpen(false);
     setMemberEmail("");
     router.refresh();
@@ -160,6 +175,10 @@ export function GroupDetailClient({
                 <DialogTitle>Invite by email</DialogTitle>
               </DialogHeader>
               <form onSubmit={handleAddMember} className="space-y-4">
+                <p className="text-sm text-muted-foreground">
+                  If they already use SplitPay, they will see an invite on their
+                  dashboard. Otherwise we email them to sign up and join.
+                </p>
                 <div className="space-y-2">
                   <Label>Email</Label>
                   <Input
@@ -171,7 +190,7 @@ export function GroupDetailClient({
                   />
                 </div>
                 <Button type="submit" className="w-full" disabled={loading}>
-                  Add member
+                  Send invitation
                 </Button>
               </form>
             </DialogContent>

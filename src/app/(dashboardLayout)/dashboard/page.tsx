@@ -1,11 +1,17 @@
 import { fetchMyGroupsAction } from "@/actions/groupActions";
+import { fetchMyInvitesAction } from "@/actions/inviteActions";
+import { PendingInvites } from "@/components/modules/dashboard/PendingInvites";
 import { ROUTES } from "@/config/routes";
 import Link from "next/link";
 import { Users, ReceiptText, CircleDollarSign } from "lucide-react";
 
 export default async function DashboardPage() {
-  const result = await fetchMyGroupsAction();
+  const [result, invitesResult] = await Promise.all([
+    fetchMyGroupsAction(),
+    fetchMyInvitesAction(),
+  ]);
   const groups = result.success ? result.data : [];
+  const invites = invitesResult.success ? invitesResult.data : [];
 
   const totalExpenses = groups.reduce(
     (sum, g) => sum + (g._count?.expenses ?? 0),
@@ -20,6 +26,8 @@ export default async function DashboardPage() {
           Track group expenses, balances, and settlements from one place.
         </p>
       </div>
+
+      <PendingInvites invites={invites} />
 
       <div className="grid gap-4 md:grid-cols-3">
         {[
