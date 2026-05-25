@@ -1,6 +1,7 @@
 "use server";
 
 import { createExpense, listGroupExpenses } from "@/services/expenses/expenses.service";
+import { getApiErrorMessage } from "@/lib/apiError";
 import { revalidatePath } from "next/cache";
 import { ROUTES } from "@/config/routes";
 
@@ -38,12 +39,9 @@ export const createExpenseAction = async (
     revalidatePath(ROUTES.balances);
     return { success: true as const, data: expense };
   } catch (error: unknown) {
-    const axiosError = error as { response?: { data?: { message?: string } } };
     return {
       success: false as const,
-      message:
-        axiosError.response?.data?.message ||
-        (error instanceof Error ? error.message : "Failed to create expense"),
+      message: getApiErrorMessage(error, "Failed to create expense"),
     };
   }
 };
