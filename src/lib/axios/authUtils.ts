@@ -1,4 +1,4 @@
-export type UserRole = "SUPER_ADMIN" | "ADMIN" | "STUDENT" | "COMMON";
+export type UserRole = "SUPER_ADMIN" | "ADMIN" | "USER" | "STUDENT" | "COMMON";
 
 export const authRoutes = [ "/login", "/register", "/forgot-password", "/reset-password", "/verify-email" ];
 
@@ -34,9 +34,9 @@ export const isRouteMatches = (pathname : string, routes : RouteConfig) => {
     return routes.pattern.some((pattern : RegExp) => pattern.test(pathname));
 }
 
-export const getRouteOwner = (pathname : string) : "SUPER_ADMIN" | "ADMIN" | "STUDENT" | "COMMON" | null => {
+export const getRouteOwner = (pathname : string) : "SUPER_ADMIN" | "ADMIN" | "USER" | "STUDENT" | "COMMON" | null => {
     if(isRouteMatches(pathname, studentProtectedRoutes)) {
-        return "STUDENT";
+        return "USER";
     }
 
     if(isRouteMatches(pathname, adminProtectedRoutes)) {
@@ -44,7 +44,7 @@ export const getRouteOwner = (pathname : string) : "SUPER_ADMIN" | "ADMIN" | "ST
     }
     
     if(isRouteMatches(pathname, studentProtectedRoutes)) {
-        return "STUDENT";
+        return "USER";
     }
 
     if(isRouteMatches(pathname, commonProtectedRoutes)) {
@@ -59,8 +59,8 @@ export const getDefaultDashboardRoute = (role : UserRole) => {
         return "/admin/dashboard";
     }
 
-    if(role === "STUDENT") {
-        return "/dashboard/classroom";
+    if(role === "USER" || role === "STUDENT") {
+        return "/dashboard";
     }
 
     return "/";
@@ -74,7 +74,7 @@ export const isValidRedirectForRole = (redirectPath : string, role : UserRole) =
         return true;
     }
 
-    if(routeOwner === role){
+    if(routeOwner === role || (routeOwner === "USER" && role === "STUDENT")){
         return true;
     }
 

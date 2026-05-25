@@ -222,8 +222,14 @@ const LoginForm = ({ redirectPath }: LoginFormProps) => {
                         variant="outline"
                         className="w-full h-11 rounded-xl font-semibold gap-3 border-border hover:bg-secondary transition-all"
                         onClick={() => {
-                            const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
-                            window.location.href = `${baseUrl}/auth/login/google${redirectPath ? `?redirect=${redirectPath}` : ''}`;
+                            const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, "");
+                            if (!baseUrl) {
+                                setServerError("API URL is not configured");
+                                return;
+                            }
+
+                            const query = redirectPath ? `?redirect=${encodeURIComponent(redirectPath)}` : "";
+                            window.location.href = `${baseUrl}/auth/login/google${query}`;
                         }}
                     >
                         <svg className="h-5 w-5" viewBox="0 0 24 24">
