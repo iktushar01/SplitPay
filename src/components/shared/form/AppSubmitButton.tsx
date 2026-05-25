@@ -26,7 +26,7 @@ const AppSubmitButton = ({
       type='submit'
       disabled={isDisabled} 
       className={cn(
-        // Acadex Branding: Rounded-xl for that modern app feel
+        // SplitPay Branding: Rounded-xl for that modern app feel
         "w-full h-11 rounded-xl font-bold tracking-wide transition-all duration-200 active:scale-[0.98]",
         "bg-primary text-primary-foreground hover:bg-primary/90",
         "shadow-[0_4px_0_0_oklch(0.75_0.15_85)] hover:shadow-[0_2px_0_0_oklch(0.75_0.15_85)] hover:translate-y-[2px]", // Pressable 3D effect

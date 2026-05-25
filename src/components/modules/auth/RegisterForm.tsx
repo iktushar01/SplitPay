@@ -10,7 +10,7 @@ import { useForm } from "@tanstack/react-form";
 import { useMutation } from "@tanstack/react-query";
 import {
     Eye, EyeOff, Lock, Mail, ChevronLeft,
-    GraduationCap, User, Camera, X
+    ReceiptText, User, Camera, X
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -79,15 +79,10 @@ const removeImage = (field: any) => {
 
     return (
         <main className="relative flex min-h-screen w-full flex-col lg:flex-row overflow-hidden bg-background">
-            {/* 1. NOTEPAD BACKGROUND EFFECT */}
-            <div
-                className="absolute inset-0 z-0 opacity-30 dark:opacity-10 pointer-events-none"
-                style={{
-                    backgroundImage: `linear-gradient(var(--muted) 1px, transparent 1px)`,
-                    backgroundSize: '100% 2.5rem',
-                }}
-            />
-            <div className="absolute top-0 left-[8%] h-full bg-destructive/10 z-0 md:left-[12%]" />
+            {/* 1. PREMIUM NEON MESH BACKGROUND */}
+            <div className="absolute inset-0 z-0 bg-linear-to-b from-transparent to-muted/20 pointer-events-none" />
+            <div className="absolute top-[-10%] left-[-10%] h-[50%] w-[50%] rounded-full bg-cyan-500/10 blur-[120px] dark:bg-cyan-500/5 pointer-events-none" />
+            <div className="absolute bottom-[-10%] right-[-10%] h-[50%] w-[50%] rounded-full bg-emerald-500/10 blur-[120px] dark:bg-emerald-500/5 pointer-events-none" />
 
             {/* 2. HOME NAVIGATION */}
             <nav className="absolute top-6 left-6 z-20">
@@ -100,27 +95,56 @@ const removeImage = (field: any) => {
             </nav>
 
             {/* 3. LEFT BRANDING (DESKTOP) */}
-            <div className="hidden lg:flex flex-1 flex-col items-center justify-center p-20 z-10 relative">
-                <div className="absolute top-1/4 left-1/4 h-64 w-64 rounded-full bg-primary/5 blur-[100px] animate-pulse" />
+            <div className="hidden lg:flex flex-1 flex-col items-center justify-center p-20 z-10 relative bg-slate-50/50 dark:bg-slate-950/20 border-r border-border/50">
                 <div className="relative space-y-8 animate-in fade-in slide-in-from-left-8 duration-700">
-                    <div className="group relative flex h-20 w-20 items-center justify-center rounded-3xl bg-primary shadow-2xl shadow-primary/20 transition-transform hover:rotate-3">
-                        <GraduationCap className="h-12 w-12 text-primary-foreground transition-transform group-hover:scale-110" />
+                    <div className="group relative flex h-20 w-20 items-center justify-center rounded-3xl bg-cyan-600 dark:bg-cyan-700 shadow-2xl shadow-cyan-600/20 transition-transform hover:rotate-3">
+                        <ReceiptText className="h-12 w-12 text-white transition-transform group-hover:scale-110" />
                         <div className="absolute inset-0 rounded-3xl bg-gradient-to-tr from-white/10 to-transparent pointer-events-none" />
                     </div>
 
                     <div className="space-y-4">
                         <h1 className="text-7xl font-black tracking-tighter text-foreground leading-[1.1]">
-                            Join the <br />
-                            <span className="relative inline-block text-primary">
-                                Community.
-                                <svg className="absolute -bottom-2 left-0 w-full h-3 text-primary/30" viewBox="0 0 100 10" preserveAspectRatio="none">
+                            Settle debts. <br />
+                            <span className="relative inline-block text-cyan-600 dark:text-cyan-400">
+                                No stress.
+                                <svg className="absolute -bottom-2 left-0 w-full h-3 text-cyan-500/30" viewBox="0 0 100 10" preserveAspectRatio="none">
                                     <path d="M0 5 Q 25 0 50 5 T 100 5" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" />
                                 </svg>
                             </span>
                         </h1>
                         <p className="max-w-md text-xl font-medium text-muted-foreground leading-relaxed">
-                            Create your account to start sharing notes and collaborating with your classmates.
+                            Join SplitPay today to manage your shared travel, roommate, or group event expenses with ease and speed.
                         </p>
+                    </div>
+
+                    {/* Interactive Bill Card Preview */}
+                    <div className="w-full max-w-sm rounded-2xl border border-border bg-card/70 p-5 shadow-xl backdrop-blur-md animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-300">
+                        <div className="flex items-center justify-between border-b border-border/50 pb-3">
+                            <div>
+                                <p className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground">Active Group</p>
+                                <p className="text-sm font-bold text-foreground">Roommates Expense</p>
+                            </div>
+                            <span className="rounded-full bg-cyan-500/10 px-2.5 py-0.5 text-[10px] font-bold text-cyan-600 dark:text-cyan-400 uppercase tracking-wide">
+                                Active
+                            </span>
+                        </div>
+                        <div className="mt-3 space-y-2">
+                            <div className="flex items-center justify-between text-xs">
+                                <span className="text-muted-foreground">Total spent</span>
+                                <span className="font-semibold text-foreground">৳4,500</span>
+                            </div>
+                            <div className="flex items-center justify-between text-xs">
+                                <span className="text-muted-foreground">Rent share</span>
+                                <span className="font-semibold text-foreground">৳2,250</span>
+                            </div>
+                        </div>
+                        <div className="mt-4 rounded-xl bg-cyan-500/10 dark:bg-cyan-500/5 p-3 flex items-center justify-between border border-cyan-500/10">
+                            <p className="text-xs font-semibold text-foreground flex items-center gap-2">
+                                <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                                Amin settled with Rafi
+                            </p>
+                            <p className="text-xs font-bold text-emerald-600 dark:text-emerald-400">৳2,250</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -131,7 +155,7 @@ const removeImage = (field: any) => {
 
                     <div className="mb-8 text-center lg:text-left">
                         <h2 className="text-3xl font-bold tracking-tight text-foreground">Sign Up</h2>
-                        <p className="mt-2 text-sm text-muted-foreground">Start your journey with Acadex today!</p>
+                        <p className="mt-2 text-sm text-muted-foreground">Start tracking and splitting expenses with ease.</p>
                     </div>
 
                     <form
@@ -218,9 +242,9 @@ const removeImage = (field: any) => {
                             {(field) => (
                                 <AppField
                                     field={field}
-                                    label="University Email"
+                                    label="Email Address"
                                     type="email"
-                                    placeholder="you@college.edu"
+                                    placeholder="you@example.com"
                                     prepend={<Mail className="h-4 w-4" />}
                                 />
                             )}

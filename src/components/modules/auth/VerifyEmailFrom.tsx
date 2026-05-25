@@ -90,15 +90,10 @@ const VerifyEmailForm = () => {
 
   return (
     <main className="relative flex min-h-screen w-full items-center justify-center overflow-hidden bg-background">
-      {/* NOTEPAD BACKGROUND EFFECT */}
-      <div
-        className="absolute inset-0 z-0 opacity-30 dark:opacity-10 pointer-events-none"
-        style={{
-          backgroundImage: `linear-gradient(var(--muted) 1px, transparent 1px)`,
-          backgroundSize: "100% 2.5rem",
-        }}
-      />
-      <div className="absolute top-0 left-[10%] h-full w-[2px] bg-destructive/10 z-0 md:left-[15%] lg:left-[20%]" />
+      {/* 1. PREMIUM NEON MESH BACKGROUND */}
+      <div className="absolute inset-0 z-0 bg-linear-to-b from-transparent to-muted/20 pointer-events-none" />
+      <div className="absolute top-[-10%] left-[-10%] h-[50%] w-[50%] rounded-full bg-cyan-500/10 blur-[120px] dark:bg-cyan-500/5 pointer-events-none" />
+      <div className="absolute bottom-[-10%] right-[-10%] h-[50%] w-[50%] rounded-full bg-emerald-500/10 blur-[120px] dark:bg-emerald-500/5 pointer-events-none" />
 
       <nav className="absolute top-6 left-6 z-20">
         <Link href="/register">
@@ -113,8 +108,8 @@ const VerifyEmailForm = () => {
         <div className="w-full rounded-[2.5rem] border border-border bg-card/80 p-8 md:p-12 shadow-2xl backdrop-blur-xl text-center">
           
           <div className="flex flex-col items-center mb-8">
-            <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary shadow-lg shadow-primary/20">
-              <ShieldCheck className="h-8 w-8 text-primary-foreground" />
+            <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-cyan-600 dark:bg-cyan-700 shadow-lg shadow-cyan-600/20">
+              <ShieldCheck className="h-8 w-8 text-white" />
             </div>
             <h2 className="text-3xl font-black tracking-tight text-foreground">Verify Your Identity</h2>
             
